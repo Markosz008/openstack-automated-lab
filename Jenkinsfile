@@ -37,6 +37,8 @@ pipeline {
     }
     
     post {
-        cleanWs() // A build végén kitakarítjuk a munkakörnyezetet
+        always {
+            cleanWs() // Így már szabályos, a takarítás mindenképp lefut a végén
+        }
     }
 }
