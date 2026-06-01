@@ -15,11 +15,10 @@
       reboot:
         reboot_timeout: 300
 
-    - name: 3. MicroStack letöltése és telepítése Snap segítségével
-      snap:
-        name: microstack
-        channel: beta
-        devmode: yes # EZT JAVÍTOTTUK! Így már szabályos az Ansible számára
+    - name: 3. MicroStack letöltése és telepítése parancssorból (Golyóálló megoldás)
+      command: snap install microstack --beta --devmode
+      register: snap_output
+      changed_when: "'installed' in snap_output.stdout or 'frissítve' in snap_output.stdout"
 
     - name: 4. MicroStack inicializálása (Aszinkron indítás a beragadás elkerülésére)
       shell: "microstack init --auto --control > /home/ubuntu/microstack_init.log 2>&1"
