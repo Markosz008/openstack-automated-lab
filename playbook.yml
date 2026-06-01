@@ -11,19 +11,29 @@
         upgrade: dist
         cache_valid_time: 3600
 
-    - name: 2. MicroStack letöltése és telepítése Snap segítségével
+    - name: 2. Gép újraindítása a friss kernel élesítéséhez (Senior DevOps Move)
+      reboot:
+        reboot_timeout: 300
+
+    - name: 3. MicroStack letöltése és telepítése Snap segítségével
       snap:
         name: microstack
         channel: beta
         options:
           - devmode
 
-    - name: 3. MicroStack inicializálása (Ez eltarthat pár percig)
-      command: microstack init --auto --control
-      register: init_output
-      changed_when: "'Marked microstack as initialized' in init_output.stdout"
+    - name: 4. MicroStack inicializálása (Aszinkron indítás a beragadás elkerülésére)
+      shell: "microstack init --auto --control > /home/ubuntu/microstack_init.log 2>&1"
+      async: 900
+      poll: 0
 
-    - name: 4. Kényelmi openstack alias hozzáadása az ubuntu felhasználónak
+    - name: 5. Várakozás az OpenStack API (Keystone) elindulására (Port 5000)
+      wait_for:
+        port: 5000
+        delay: 30
+        timeout: 600
+
+    - name: 6. Kényelmi openstack alias hozzáadása az ubuntu felhasználónak
       lineinfile:
         path: /home/ubuntu/.bashrc
         line: "alias openstack='microstack.openstack'"
