@@ -28,10 +28,10 @@ pipeline {
 
         stage('Ansible Configuration') {
             steps {
-                // Megvárjuk, amíg az AWS gép SSH-ja teljesen elindul
+                // Adunk egy kis extra időt az AWS-nek, hogy az SSH daemon biztosan elinduljon
                 sh 'sleep 30'
-                // Elindítjuk az Ansible-t, átadva neki a dinamikus IP-t és az SSH kulcsot
-                sh "ansible-playbook -i '${env.EC2_PUBLIC_IP},' -u ubuntu --private-key ~/.ssh/id_rsa playbook.yml"
+                // Átadjuk a környezeti változót, ami átlépi a kézi jóváhagyást
+                sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${env.EC2_PUBLIC_IP},' -u ubuntu --private-key ~/.ssh/id_rsa playbook.yml"
             }
         }
     }
