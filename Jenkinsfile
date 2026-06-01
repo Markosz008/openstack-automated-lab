@@ -38,7 +38,7 @@ pipeline {
     
     post {
         always {
-            cleanWs() // Így már szabályos, a takarítás mindenképp lefut a végén
+            echo 'A build befejeződött, az állapotfájlokat megőrizzük.'
         }
     }
 }
