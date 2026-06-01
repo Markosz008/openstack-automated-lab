@@ -19,8 +19,7 @@
       snap:
         name: microstack
         channel: beta
-        options:
-          - devmode
+        devmode: yes # EZT JAVÍTOTTUK! Így már szabályos az Ansible számára
 
     - name: 4. MicroStack inicializálása (Aszinkron indítás a beragadás elkerülésére)
       shell: "microstack init --auto --control > /home/ubuntu/microstack_init.log 2>&1"
