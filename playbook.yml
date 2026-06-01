@@ -1,0 +1,30 @@
+---
+- name: OpenStack Lab Környezet Teljes Konfigurálása
+  hosts: all
+  become: yes # Sudo joggal futtat mindent
+  gather_facts: yes
+
+  tasks:
+    - name: 1. Rendszerfrissítés futtatása (apt update & upgrade)
+      apt:
+        update_cache: yes
+        upgrade: dist
+        cache_valid_time: 3600
+
+    - name: 2. MicroStack letöltése és telepítése Snap segítségével
+      snap:
+        name: microstack
+        channel: beta
+        options:
+          - devmode
+
+    - name: 3. MicroStack inicializálása (Ez eltarthat pár percig)
+      command: microstack init --auto --control
+      register: init_output
+      changed_when: "'Marked microstack as initialized' in init_output.stdout"
+
+    - name: 4. Kényelmi openstack alias hozzáadása az ubuntu felhasználónak
+      lineinfile:
+        path: /home/ubuntu/.bashrc
+        line: "alias openstack='microstack.openstack'"
+        state: present
